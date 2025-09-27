@@ -1,22 +1,27 @@
 {
 	"FileVersion": 3,
 	"Version": 1,
-	"VersionName": "1.0",
+	"VersionName": "0.1",
 	"FriendlyName": "VortexMover",
 	"Description": "High-performance Mover-based movement system",
-	"Category": "Other",
+	"Category": "Gameplay",
 	"CreatedBy": "Nic",
 	"CreatedByURL": "",
 	"DocsURL": "",
 	"MarketplaceURL": "",
 	"SupportURL": "",
-	"CanContainContent": true,
+	"CanContainContent": false,
 	"IsBetaVersion": true,
 	"IsExperimentalVersion": false,
 	"Installed": false,
 	"Modules": [
 		{
 			"Name": "VortexMover",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "VortexMoverDemo",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}
