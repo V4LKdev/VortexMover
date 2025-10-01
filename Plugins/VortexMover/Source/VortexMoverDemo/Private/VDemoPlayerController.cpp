@@ -10,6 +10,11 @@ void AVDemoPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
+	if (!IsLocalController())
+	{
+		return;
+	}
+
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
 	ensureMsgf(Subsystem, TEXT("VDemoPlayerController was unable to get an EnhancedInputLocalPlayerSubsystem"));
 	

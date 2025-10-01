@@ -44,26 +44,25 @@ void AVDemoPawn::PostInitializeComponents()
 	InputProducer->Initialize(this);
 }
 
-void AVDemoPawn::BeginPlay()
+void AVDemoPawn::OnRep_Controller()
 {
-	Super::BeginPlay();
+	Super::OnRep_Controller();
+
+	BindControllerInput();
 }
-
-
-void AVDemoPawn::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-
 
 void AVDemoPawn::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
+	BindControllerInput();
+}
+
+void AVDemoPawn::BindControllerInput()
+{
 	ClearInputHandles();
 
-	if (AVDemoPlayerController* PC = Cast<AVDemoPlayerController>(NewController))
+	if (AVDemoPlayerController* PC = Cast<AVDemoPlayerController>(GetController()))
 	{
 		DemoController = PC;
 
@@ -100,6 +99,18 @@ void AVDemoPawn::PossessedBy(AController* NewController)
 		});
 	}
 }
+
+void AVDemoPawn::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+
+void AVDemoPawn::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
 
 void AVDemoPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {

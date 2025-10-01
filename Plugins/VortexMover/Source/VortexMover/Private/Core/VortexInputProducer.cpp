@@ -20,7 +20,7 @@ void UVortexInputProducer::ProduceInput_Implementation(int32 SimTimeMs, FMoverIn
 	FVortexInputCmd& Cmd = InputCmdResult.InputCollection.FindOrAddMutableDataByType<FVortexInputCmd>();
 	
 	// Only produce for locally-controlled pawns with a controller (client-side).
-	if (!OwnerPawn.IsValid()|| !OwnerPawn.Get()->GetController() || !OwnerPawn->IsLocallyControlled())
+	if (!OwnerPawn.IsValid() || !OwnerPawn->IsLocallyControlled())
 	{
 		static const FVortexInputCmd EmptyInput;
 		Cmd = EmptyInput;

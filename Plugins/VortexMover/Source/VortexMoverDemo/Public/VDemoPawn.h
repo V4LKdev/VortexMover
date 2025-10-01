@@ -33,6 +33,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void PostInitializeComponents() override;
+	virtual void OnRep_Controller() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UCapsuleComponent> Capsule;
@@ -45,6 +46,8 @@ protected:
 	TObjectPtr<UVortexInputProducer> InputProducer;
 
 private:
+	void BindControllerInput();
+	
 	FDelegateHandle LookInputDelegateHandle;
 	FDelegateHandle MoveInputDelegateHandle;
 	FDelegateHandle JumpInputDelegateHandle;
