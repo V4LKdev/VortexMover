@@ -10,6 +10,7 @@ class AVDemoPlayerController;
 class UCapsuleComponent;
 class UVortexMoverComponent;
 class UVortexInputProducer;
+class UCharacterMoverComponent;
 
 /**
  * AVDemoPawn

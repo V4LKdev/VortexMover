@@ -17,37 +17,50 @@ void UVortexInputProducer::Initialize(APawn* InOwnerPawn)
 
 void UVortexInputProducer::ProduceInput_Implementation(int32 SimTimeMs, FMoverInputCmdContext& InputCmdResult)
 {
+	FVortexInputCmd& Cmd = InputCmdResult.InputCollection.FindOrAddMutableDataByType<FVortexInputCmd>();
+	
 	// Only produce for locally-controlled pawns with a controller (client-side).
 	if (!OwnerPawn.IsValid()|| !OwnerPawn.Get()->GetController() || !OwnerPawn->IsLocallyControlled())
 	{
+		static const FVortexInputCmd EmptyInput;
+		Cmd = EmptyInput;
 		return;
 	}
 	
-	FVortexInputCmd& Cmd = InputCmdResult.InputCollection.FindOrAddMutableDataByType<FVortexInputCmd>();
+	Cmd.ControlRotation = OwnerPawn->GetControlRotation();
+
+	const FVector FinalDirectionalIntent = Cmd.ControlRotation.RotateVector(CachedMove);
+	Cmd.SetMoveInput(FinalDirectionalIntent);
+
+	// TODO: this is facing intent, not input, and the LookInput cached value is actually not being used here in this class at all, could remove later
+	Cmd.OrientationInput = Cmd.ControlRotation.Vector().GetSafeNormal();
 	
-	Cmd.MoveInput = CachedMove;
-	Cmd.LookInput = CachedLook;
 	Cmd.bJumpPressed = bJumpPressed;
 	Cmd.bJumpJustPressed = bJumpJustPressed;
 	Cmd.bCrouchPressed = bCrouchPressed;
 
+	
 	const int32 DebugLevel = VortexMoverCVars::IsInputDebugEnabled();
 	if (DebugLevel >= 2) {LogOnChange(); }
 	else if (DebugLevel >= 1) { LogPerFrame(); }
 
+	// Clear single-use inputs
 	bJumpJustPressed = false;
 }
 
 void UVortexInputProducer::OnMove(const FInputActionValue& Value)
 {
-	CachedMove = Value.Get<FVector2D>();
-	CachedMove = CachedMove.ClampAxes(-1.0f, 1.0f);
+	const FVector MovementVector = Value.Get<FVector>();
+	CachedMove.X = FMath::Clamp(MovementVector.X, -1.0f, 1.0f);
+	CachedMove.Y = FMath::Clamp(MovementVector.Y, -1.0f, 1.0f);
+	CachedMove.Z = FMath::Clamp(MovementVector.Z, -1.0f, 1.0f);
 }
 
 void UVortexInputProducer::OnLook(const FInputActionValue& Value)
 {
-	CachedLook = Value.Get<FVector2D>();
-	CachedLook = CachedLook.ClampAxes(-1.0f, 1.0f);
+	const FVector2D LookVector = Value.Get<FVector2D>();
+	CachedLook.Yaw = FMath::Clamp(LookVector.X, -1.0f, 1.0f);
+	CachedLook.Pitch = FMath::Clamp(LookVector.Y, -1.0f, 1.0f);
 }
 
 void UVortexInputProducer::OnJump(const FInputActionValue& Value)
@@ -64,14 +77,14 @@ void UVortexInputProducer::OnCrouch(const FInputActionValue& Value)
 
 void UVortexInputProducer::ResetCachedInput()
 {
-	CachedMove = FVector2D::ZeroVector;
-	CachedLook = FVector2D::ZeroVector;
+	CachedMove = FVector::ZeroVector;
+	CachedLook = FRotator::ZeroRotator;
 	bJumpPressed = false;
 	bJumpJustPressed = false;
 	bCrouchPressed = false;
 
-	PrevMove = FVector2D::ZeroVector;
-	PrevLook = FVector2D::ZeroVector;
+	PrevMove = FVector::ZeroVector;
+	PrevLook = FRotator::ZeroRotator;
 	bPrevJumpPressed = false;
 	bPrevCrouchPressed = false;
 }
@@ -80,7 +93,7 @@ void UVortexInputProducer::LogPerFrame() const
 {
 	UE_LOG(LogVortexMoverInput, Log, TEXT("[Produce] Move(%.2f,%.2f) Look(%.2f,%.2f) Jump(P:%d JP:%d) Crouch(P:%d)"),
 	CachedMove.X, CachedMove.Y,
-	CachedLook.X, CachedLook.Y,
+	CachedLook.Pitch, CachedLook.Yaw,
 	bJumpPressed ? 1 : 0,
 	bJumpJustPressed ? 1 : 0,
 	bCrouchPressed ? 1 : 0);
@@ -97,7 +110,7 @@ void UVortexInputProducer::LogOnChange()
 	}
 	if (bLookChanged)
 	{
-		UE_LOG(LogVortexMoverInput, Log, TEXT("[Change] Look -> (%.3f, %.3f)"), CachedLook.X, CachedLook.Y);
+		UE_LOG(LogVortexMoverInput, Log, TEXT("[Change] Look -> (%.3f, %.3f)"), CachedLook.Pitch, CachedLook.Yaw);
 	}
 	if (bJumpPressed != bPrevJumpPressed)
 	{

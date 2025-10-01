@@ -42,15 +42,15 @@ private:
 	TWeakObjectPtr<APawn> OwnerPawn;
 	
 	// Cached state (game thread)
-	FVector2D CachedMove = FVector2D::ZeroVector;
-	FVector2D CachedLook = FVector2D::ZeroVector;
+	FVector CachedMove = FVector::ZeroVector;
+	FRotator CachedLook = FRotator::ZeroRotator;
 	bool bJumpPressed = false;
 	bool bJumpJustPressed = false;
 	bool bCrouchPressed = false;
 
 	// Previous values for change logging
-	FVector2D PrevMove = FVector2D::ZeroVector;
-	FVector2D PrevLook = FVector2D::ZeroVector;
+	FVector PrevMove = FVector::ZeroVector;
+	FRotator PrevLook = FRotator::ZeroRotator;
 	bool bPrevJumpPressed = false;
 	bool bPrevCrouchPressed = false;
 
@@ -58,3 +58,4 @@ private:
 	void LogPerFrame() const;
 	void LogOnChange();
 };
+

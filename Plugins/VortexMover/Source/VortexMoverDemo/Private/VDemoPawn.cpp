@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Core/VortexInputProducer.h"
 #include "Core/VortexMoverComponent.h"
+#include "Mover/Public/DefaultMovementSet/CharacterMoverComponent.h"
 
 AVDemoPawn::AVDemoPawn()
 {
@@ -65,7 +66,7 @@ void AVDemoPawn::PossessedBy(AController* NewController)
 	if (AVDemoPlayerController* PC = Cast<AVDemoPlayerController>(NewController))
 	{
 		DemoController = PC;
-		
+
 		LookInputDelegateHandle = PC->OnInputLook.AddWeakLambda(this, [this](const FInputActionValue& Value)
 		{
 			if (IsValid(InputProducer))
@@ -103,14 +104,14 @@ void AVDemoPawn::PossessedBy(AController* NewController)
 void AVDemoPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	ClearInputHandles();
-	
+
 	Super::EndPlay(EndPlayReason);
 }
 
 void AVDemoPawn::UnPossessed()
 {
 	ClearInputHandles();
-	
+
 	Super::UnPossessed();
 }
 

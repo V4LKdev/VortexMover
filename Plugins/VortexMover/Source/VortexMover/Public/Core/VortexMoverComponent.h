@@ -9,8 +9,13 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType, Blueprintable, meta = (BlueprintSpawnableComponent))
 class VORTEXMOVER_API UVortexMoverComponent : public UMoverComponent
 {
 	GENERATED_BODY()
+
+public:
+	UVortexMoverComponent();
+
+protected:
 };

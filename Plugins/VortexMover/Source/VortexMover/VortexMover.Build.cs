@@ -24,7 +24,8 @@ public class VortexMover : ModuleRules
 			new string[]
 			{
 				"Core",
-				"Mover"
+				"Mover",
+				"NetCore"
 			}
 			);
 			
